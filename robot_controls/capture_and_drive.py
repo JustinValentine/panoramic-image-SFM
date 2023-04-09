@@ -1,10 +1,8 @@
 import cv2
-import numpy as np
 import os
 import time
 import serial
 import struct
-import math
 import hid
 import threading
 

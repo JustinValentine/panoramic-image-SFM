@@ -2,6 +2,7 @@ import cv2
 import os
 import time
 
+
 def check_camera_index(index):
     cap = cv2.VideoCapture(index)
     if not cap.isOpened():
@@ -9,6 +10,7 @@ def check_camera_index(index):
         return False
     cap.release()
     return True
+
 
 def get_available_cameras():
     index = 0
@@ -20,6 +22,7 @@ def get_available_cameras():
             break
         index += 1
     return available_cameras
+
 
 def capture_and_save_photos_from_all_available_cameras():
     available_cameras = get_available_cameras()
@@ -37,13 +40,14 @@ def capture_and_save_photos_from_all_available_cameras():
             if not os.path.exists(folder_name):
                 os.makedirs(folder_name)
 
-            file_name = f'{folder_name}/{current_time}.jpg'
+            file_name = f'images/{folder_name}/{current_time}.jpg'
             cv2.imwrite(file_name, frame)
             print(f"Saved image from camera {camera_index} as {file_name}")
 
     # Release the video capture objects
     for cap in caps:
         cap.release()
+
 
 if __name__ == "__main__":
     capture_and_save_photos_from_all_available_cameras()
