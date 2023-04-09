@@ -1,8 +1,10 @@
 import numpy as np
 import os
-import subprocess
+import sys
 import calibrate_camera
 
+current_path = os.getcwd()
+print("Current working directory:", current_path)
 
 def load_or_calibrate():
     try:

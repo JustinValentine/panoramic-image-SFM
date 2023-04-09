@@ -10,6 +10,7 @@ print("Current working directory:", current_path)
 
 # REFERENCE https://medium.com/@kennethjiang/calibrate-fisheye-lens-using-opencv-333b05afa0b0
 
+# input checkerboard size
 CHECKERBOARD = (8, 6)
 
 subpix_criteria = (cv2.TERM_CRITERIA_EPS+cv2.TERM_CRITERIA_MAX_ITER, 30, 0.1)
