@@ -6,6 +6,8 @@ class MyPS4Controller(Controller):
         super(MyPS4Controller, self).__init__(**kwargs)
         self.left_velocity = 0
         self.right_velocity = 0
+        self.prev_l3_value = 0
+
 
     def update_wheel_velocities(self):
         print('vl', self.left_velocity)
@@ -21,15 +23,17 @@ class MyPS4Controller(Controller):
         pass
 
     def on_L3_left(self, value):
-        print('on_L3_left', (value / 32767) * 500)
-        self.left_velocity += (value / 32767) * 500
-        self.right_velocity -= (value / 32767) * 500
+        difference = self.prev_l3_value - value
+        self.prev_l3_value = value
+        self.left_velocity += (difference / 32767) * 500
+        self.right_velocity -= (difference / 32767) * 500
         self.update_wheel_velocities()
 
     def on_L3_right(self, value):
-        print('on_L3_right', (value / 32767) * 500)
-        self.left_velocity -= (value / 32767) * 500
-        self.right_velocity += (value / 32767) * 500
+        difference = self.prev_l3_value + value
+        self.prev_l3_value = value
+        self.left_velocity -= (difference / 32767) * 500
+        self.right_velocity += (difference / 32767) * 500
         self.update_wheel_velocities()
 
     def on_R2_press(self, value):
