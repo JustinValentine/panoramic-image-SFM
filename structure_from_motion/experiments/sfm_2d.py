@@ -25,7 +25,7 @@ def structure_from_motion(W):
     # Compute SVD of the centered data 
     U, S, Vt = np.linalg.svd(W_centered)
 
-    print(W.shape )
+    print(W.shape)
 
     # Recover the affine camera and shape matrices
     # M_affine = U[:, :3] @ np.diag(S[:3])
@@ -53,10 +53,9 @@ def structure_from_motion(W):
     Q = np.linalg.cholesky(C)
 
     # Compute X
-    # X = Q.T @ X
+    X = Q.T @ X
 
     print(X)
-
 
     # Plot the points
     plt.scatter(*X)
