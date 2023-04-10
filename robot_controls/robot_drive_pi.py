@@ -8,6 +8,8 @@ class MyPS4Controller(Controller):
         self.right_velocity = 0
 
     def update_wheel_velocities(self):
+        print(self.left_velocity)
+        print(self.right_velocity)
         left_velocity = max(min(self.left_velocity, 500), -500)
         right_velocity = max(min(self.right_velocity, 500), -500)
         print(left_velocity, right_velocity)
