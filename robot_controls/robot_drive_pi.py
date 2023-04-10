@@ -71,14 +71,14 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
 
 
 def Drive():
-    global connection
+    connection_list = [None]
 
     def onConnect():
         print("Connected to PS4 Controller.")
 
     def onL3_y(value):
-        nonlocal connection
         nonlocal last_vl, last_vr
+        connection = connection_list[0]
 
         left_joystick_y = value
         r2_trigger = controller.get_value('r2')
@@ -88,12 +88,13 @@ def Drive():
 
         if vl != last_vl or vr != last_vr:
             cmd = struct.pack(">Bhh", 145, vl, vr) # Drirect Drive 5 bytes little endian 
-            sendCommandRaw(cmd)
+            sendCommandRaw(connection, cmd)
             last_vl, last_vr = vl, vr
 
     controller = Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
     controller.listener(onConnect=onConnect, onL3_y=onL3_y)
 
+    connection_list[0] = controller.get_connection()
     last_vl, last_vr = 0, 0
 
 
