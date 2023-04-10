@@ -13,6 +13,7 @@ class MyPS4Controller(Controller):
         self.connection = None
 
         self.start_serial()
+        print('hello')
         time.sleep(1)
         self.listen()
 
