@@ -16,6 +16,7 @@ square_corners = [
 # Define circle parameters
 circle_radius = 0.25
 
+
 def plot_intersections(circle_center):
     plt.gca().clear()
 
@@ -71,10 +72,12 @@ def plot_intersections(circle_center):
     plt.ylim(-2, square_side_length + 0.5)
     plt.grid()
 
+
 # Animation update function
 def update(frame):
     circle_center = (1 + 0.5 * np.cos(frame / 180*np.pi), 1 + 0.5 * np.sin(frame / 180*np.pi))
     plot_intersections(circle_center)
+
 
 fig = plt.figure()
 ani = FuncAnimation(fig, update, frames=range(0, 360, 10), interval=50, blit=False)
@@ -85,5 +88,3 @@ W = np.array(W)
 print(W.shape)
 
 np.save('W_test', W)
-
-pass
