@@ -91,6 +91,7 @@ def Drive():
             l2_trigger = controller.l2_trigger
 
             vl, vr = calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger)
+            print(vl, vr )
 
             cmd = struct.pack(">Bhh", 145, vl, vr)  # Direct Drive 5 bytes little endian
             sendCommandRaw(cmd)
