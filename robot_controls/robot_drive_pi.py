@@ -13,9 +13,7 @@ class MyPS4Controller(Controller):
         self.connection = None
 
         self.start_serial()
-        print('hello')
         time.sleep(1)
-        self.listen()
 
     def start_serial(self):
         port = '/dev/ttyUSB0'
@@ -90,10 +88,8 @@ class MyPS4Controller(Controller):
             sleep_duration = 1 / 115200
             time.sleep(sleep_duration)
 
-
 def velocity_callback(left_velocity, right_velocity):
     print('Robot:', left_velocity, right_velocity)
-
 
 def main():
     controller = MyPS4Controller(
@@ -101,4 +97,9 @@ def main():
         connecting_using_ds4drv=False,
         velocity_callback=velocity_callback,
     )
+    controller.listen()
     controller.drive()
+
+if __name__ == "__main__":
+    main()
+
