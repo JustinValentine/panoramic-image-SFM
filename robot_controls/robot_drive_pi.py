@@ -12,14 +12,14 @@ PRODUCT_ID = 0x05C4
 def onStart():
     global connection
 
-    port = '/dev/ttyUSB0' # Device name
-    Baudrate = 115200 # rate at which information is transferred in a communication channel
-    Timeout = 1 # Set a read timeout value in seconds
+    port = '/dev/ttyUSB0'  # Device name
+    Baudrate = 115200  # rate at which information is transferred in a communication channel
+    Timeout = 1  # Set a read timeout value in seconds
 
     try:
         connection = serial.Serial(port, baudrate=Baudrate, timeout=Timeout)
-        sendCommandASCII('128') # Send start command
-        sendCommandASCII('131') # Send command to Enter FULL mode 
+        sendCommandASCII('128')  # Send start command
+        sendCommandASCII('131')  # Send command to Enter FULL mode
         print("Connected!")
 
     except:
@@ -27,7 +27,7 @@ def onStart():
 
 
 def sendCommandASCII(command):
-    cmd = bytes([int(v) for v in command.split()]) # An empty bytes object of the specified sizes will be created
+    cmd = bytes([int(v) for v in command.split()])  # An empty bytes object of the specified sizes will be created
     sendCommandRaw(cmd)
 
 
@@ -36,8 +36,8 @@ def sendCommandRaw(command):
 
     try:
         if connection is not None:
-            assert isinstance(command, bytes) # Check if commad is of type bytes 
-            connection.write(command) # Write the bytes data to the port
+            assert isinstance(command, bytes)  # Check if commad is of type bytes
+            connection.write(command)  # Write the bytes data to the port
             connection.flush()
         else:
             print("Not connected.")
@@ -51,6 +51,9 @@ class MyPS4Controller(Controller):
 
     def __init__(self, **kwargs):
         Controller.__init__(self, **kwargs)
+        self.left_joystick_y = 0
+        self.r2_trigger = 0
+        self.l2_trigger = 0
 
     def on_left_joystick_y(self, value):
         self.left_joystick_y = value
@@ -64,7 +67,7 @@ class MyPS4Controller(Controller):
 
 def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=200):
 
-    left_joystick_y = (left_joystick_y - 127)/127
+    left_joystick_y = (left_joystick_y - 127) / 127
     r2_trigger /= 255
     l2_trigger /= -255
 
@@ -86,7 +89,7 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
 def Drive():
 
     controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
-    controller.listen()
+    controller.start()
 
     try:
         while True:
@@ -96,7 +99,7 @@ def Drive():
 
             vl, vr = calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger)
 
-            cmd = struct.pack(">Bhh", 145, vl, vr) # Direct Drive 5 bytes little endian 
+            cmd = struct.pack(">Bhh", 145, vl, vr)  # Direct Drive 5 bytes little endian
             sendCommandRaw(cmd)
 
             baud_rate = 115200
