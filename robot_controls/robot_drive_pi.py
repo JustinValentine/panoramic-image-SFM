@@ -10,7 +10,7 @@ PRODUCT_ID = 0x05C4
 def onStart():
     global connection
 
-    port = '/dev/ttyUSB0'  # Device name
+    port = '/dev/tty.usbserial-DN0267KP'  # Device name
     Baudrate = 115200  # rate at which information is transferred in a communication channel
     Timeout = 1  # Set a read timeout value in seconds
 
@@ -50,14 +50,24 @@ class MyPS4Controller(Controller):
         self.r2_trigger = 0
         self.l2_trigger = 0
 
-    def on_left_joystick_y(self, value):
-        self.left_joystick_y = value
+    def on_left_analog(self, x, y):
+        self.left_joystick_y = y
 
     def on_R2_press(self, value):
         self.r2_trigger = value
 
     def on_L2_press(self, value):
         self.l2_trigger = value
+
+    def send_wheel_commands(self):
+        vl, vr = calculate_wheel_velocities(self.left_joystick_y, self.r2_trigger, self.l2_trigger)
+
+        cmd = struct.pack(">Bhh", 145, vl, vr)  # Direct Drive 5 bytes little endian
+        sendCommandRaw(cmd)
+
+        baud_rate = 115200
+        sleep_duration = 1 / baud_rate
+        time.sleep(sleep_duration)
 
 def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=200):
 
@@ -82,24 +92,11 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
 def Drive():
 
     controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
-    controller.listen()
+    controller.listen(timeout=0.01)
 
     try:
         while True:
-            left_joystick_y = controller.left_joystick_y
-            r2_trigger = controller.r2_trigger
-            l2_trigger = controller.l2_trigger
-
-            vl, vr = calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger)
-            print(vl, vr )
-
-            cmd = struct.pack(">Bhh", 145, vl, vr)  # Direct Drive 5 bytes little endian
-            sendCommandRaw(cmd)
-
-            baud_rate = 115200
-            sleep_duration = 1 / baud_rate
-
-            time.sleep(sleep_duration)
+            controller.send_wheel_commands()
 
     except KeyboardInterrupt:
         controller.stop()
