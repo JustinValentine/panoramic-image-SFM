@@ -100,4 +100,4 @@ def main():
         connecting_using_ds4drv=False,
         velocity_callback=velocity_callback,
     )
-    controller.drive
+    controller.drive()
