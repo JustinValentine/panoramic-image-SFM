@@ -1,6 +1,5 @@
 import time
 from pyPS4Controller.controller import Controller
-from my_robot import MyRobot
 
 class MyPS4Controller(Controller):
     def __init__(self, **kwargs):
@@ -11,7 +10,7 @@ class MyPS4Controller(Controller):
     def update_wheel_velocities(self):
         left_velocity = max(min(self.left_velocity, 500), -500)
         right_velocity = max(min(self.right_velocity, 500), -500)
-        robot.set_wheel_velocities(left_velocity, right_velocity)
+        print(left_velocity, right_velocity)
 
     def on_L3_up(self, value):
         pass  # Ignore L3 up/down events
@@ -39,7 +38,6 @@ class MyPS4Controller(Controller):
         self.right_velocity -= value / 255 * 500
         self.update_wheel_velocities()
 
-robot = MyRobot()
 
 controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
 controller.listen()
