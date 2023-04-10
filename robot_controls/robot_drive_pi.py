@@ -3,11 +3,14 @@ import numpy as np
 from pyPS4Controller.controller import Controller
 import time
 
+# These are the vendor and product IDs for a PS4 controller.
+VENDOR_ID = 0x054C
+PRODUCT_ID = 0x05C4
 
 def onStart():
     global connection
 
-    port = '/dev/tty.usbserial-DN0267KP'  # Device name
+    port = '/dev/ttyUSB0'  # Device name
     Baudrate = 115200  # rate at which information is transferred in a communication channel
     Timeout = 1  # Set a read timeout value in seconds
 
@@ -20,11 +23,9 @@ def onStart():
     except:
         print("Failed.")
 
-
 def sendCommandASCII(command):
     cmd = bytes([int(v) for v in command.split()])  # An empty bytes object of the specified sizes will be created
     sendCommandRaw(cmd)
-
 
 def sendCommandRaw(command):
     global connection
@@ -40,7 +41,6 @@ def sendCommandRaw(command):
     except serial.SerialException:
         print("Lost connection")
         connection = None
-
 
 class MyPS4Controller(Controller):
 
@@ -58,7 +58,6 @@ class MyPS4Controller(Controller):
 
     def on_L2_press(self, value):
         self.l2_trigger = value
-
 
 def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=200):
 
@@ -80,11 +79,10 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
 
     return int(vl), int(vr)
 
-
 def Drive():
 
     controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
-    controller.start()
+    controller.listen()
 
     try:
         while True:
