@@ -4,15 +4,10 @@ from pyPS4Controller.controller import Controller
 import time
 
 
-# These are the vendor and product IDs for a PS4 controller.
-VENDOR_ID = 0x054C
-PRODUCT_ID = 0x05C4
-
-
 def onStart():
     global connection
 
-    port = '/dev/ttyUSB0'  # Device name
+    port = '/dev/tty.usbserial-DN0267KP'  # Device name
     Baudrate = 115200  # rate at which information is transferred in a communication channel
     Timeout = 1  # Set a read timeout value in seconds
 
