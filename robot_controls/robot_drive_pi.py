@@ -1,9 +1,7 @@
-import serial
-import struct
-import time
-import math
+import serial, struct, time, math
 import numpy as np
 from pyPS4Controller.controller import Controller
+import time
 
 
 # These are the vendor and product IDs for a PS4 controller.
@@ -49,6 +47,21 @@ def sendCommandRaw(command):
         connection = None
 
 
+class MyPS4Controller(Controller):
+
+    def __init__(self, **kwargs):
+        Controller.__init__(self, **kwargs)
+
+    def on_left_joystick_y(self, value):
+        self.left_joystick_y = value
+
+    def on_R2_press(self, value):
+        self.r2_trigger = value
+
+    def on_L2_press(self, value):
+        self.l2_trigger = value
+
+
 def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=200):
 
     left_joystick_y = (left_joystick_y - 127)/127
@@ -71,31 +84,28 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
 
 
 def Drive():
-    connection_list = [None]
 
-    def onConnect():
-        print("Connected to PS4 Controller.")
+    controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
+    controller.listen()
 
-    def onL3_y(value):
-        nonlocal last_vl, last_vr
-        connection = connection_list[0]
+    try:
+        while True:
+            left_joystick_y = controller.left_joystick_y
+            r2_trigger = controller.r2_trigger
+            l2_trigger = controller.l2_trigger
 
-        left_joystick_y = value
-        r2_trigger = controller.get_value('r2')
-        l2_trigger = controller.get_value('l2')
+            vl, vr = calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger)
 
-        vl, vr = calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger)
+            cmd = struct.pack(">Bhh", 145, vl, vr) # Direct Drive 5 bytes little endian 
+            sendCommandRaw(cmd)
 
-        if vl != last_vl or vr != last_vr:
-            cmd = struct.pack(">Bhh", 145, vl, vr) # Drirect Drive 5 bytes little endian 
-            sendCommandRaw(connection, cmd)
-            last_vl, last_vr = vl, vr
+            baud_rate = 115200
+            sleep_duration = 1 / baud_rate
 
-    controller = Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
-    controller.listener(onConnect=onConnect, onL3_y=onL3_y)
+            time.sleep(sleep_duration)
 
-    connection_list[0] = controller.get_connection()
-    last_vl, last_vr = 0, 0
+    except KeyboardInterrupt:
+        controller.stop()
 
 
 def main():
