@@ -73,8 +73,8 @@ class MyPS4Controller(Controller):
         self.update_wheel_velocities()
 
     def on_R2_release(self, value):
-        self.left_velocity = 0
-        self.right_velocity = 0
+        self.left_velocity = 0 * value
+        self.right_velocity = 0 * value
         self.update_wheel_velocities()
 
     def on_L2_press(self, value):
@@ -83,8 +83,8 @@ class MyPS4Controller(Controller):
         self.update_wheel_velocities()
 
     def on_L2_release(self, value):
-        self.left_velocity = 0
-        self.right_velocity = 0
+        self.left_velocity = 0 * value
+        self.right_velocity = 0 * value
         self.update_wheel_velocities()
 
     def drive(self):
