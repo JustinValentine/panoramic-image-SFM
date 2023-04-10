@@ -48,6 +48,9 @@ class MyPS4Controller(Controller):
         self.left_velocity = max(min(int(self.left_velocity), 500), -500)
         self.right_velocity = max(min(int(self.right_velocity), 500), -500)
         self.velocity_callback(self.left_velocity, self.right_velocity)
+        
+        cmd = struct.pack(">Bhh", 145, self.left_velocity, self.right_velocity)
+        self.send_command_raw(cmd)
 
     def on_L3_up(self, value):
         pass
@@ -88,6 +91,7 @@ class MyPS4Controller(Controller):
             sleep_duration = 1 / 115200
             time.sleep(sleep_duration)
 
+
 def velocity_callback(left_velocity, right_velocity):
     print('Robot:', left_velocity, right_velocity)
 
@@ -98,7 +102,6 @@ def main():
         velocity_callback=velocity_callback,
     )
     controller.listen()
-    controller.drive()
 
 if __name__ == "__main__":
     main()
