@@ -7,24 +7,18 @@ LEFT_VELOCITY = 0
 RIGHT_VELOCITY = 0 
 
 class MyPS4Controller(Controller):
-    def __init__(self, **kwargs):
+    def __init__(self, velocity_callback, **kwargs):
         super(MyPS4Controller, self).__init__(**kwargs)
         self.left_velocity = 0
         self.right_velocity = 0
         self.prev_l3_value = 0
+        self.velocity_callback = velocity_callback
 
 
     def update_wheel_velocities(self):
-        global LEFT_VELOCITY, RIGHT_VELOCITY 
-        print('vl', self.left_velocity)
-        print('vr', self.right_velocity)
         self.left_velocity = max(min(int(self.left_velocity), 500), -500)
         self.right_velocity = max(min(int(self.right_velocity), 500), -500)
-
-        LEFT_VELOCITY = self.left_velocity 
-        RIGHT_VELOCITY = self.right_velocity
-
-        print(LEFT_VELOCITY, RIGHT_VELOCITY)
+        self.velocity_callback(self.left_velocity, self.right_velocity)
 
 
     def on_L3_up(self, value):
@@ -99,19 +93,26 @@ def sendCommandRaw(command):
 
 
 def Drive():
+    global LEFT_VELOCITY, RIGHT_VELOCITY
 
-    controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
+    def velocity_callback(left_velocity, right_velocity):
+        global LEFT_VELOCITY, RIGHT_VELOCITY
+        LEFT_VELOCITY = left_velocity
+        RIGHT_VELOCITY = right_velocity
+
+    controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False, velocity_callback=velocity_callback)
     controller.listen()
 
     while True:
         print('robot', LEFT_VELOCITY, RIGHT_VELOCITY)
-        cmd = struct.pack(">Bhh", 145, LEFT_VELOCITY, RIGHT_VELOCITY) # Drirect Drive 5 bytes little endian 
+        cmd = struct.pack(">Bhh", 145, LEFT_VELOCITY, RIGHT_VELOCITY)  # Direct Drive 5 bytes little endian
         sendCommandRaw(cmd)
 
         baud_rate = 115200
         sleep_duration = 1 / baud_rate
-        
+
         time.sleep(sleep_duration)
+
 
 
 def main():
