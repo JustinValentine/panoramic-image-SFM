@@ -10,7 +10,7 @@ PRODUCT_ID = 0x05C4
 def onStart():
     global connection
 
-    port = '/dev/tty.usbserial-DN0267KP'  # Device name
+    port = '/dev/ttyUSB0'  # Device name
     Baudrate = 115200  # rate at which information is transferred in a communication channel
     Timeout = 1  # Set a read timeout value in seconds
 
@@ -92,7 +92,7 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
 def Drive():
 
     controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
-    controller.listen(timeout=0.01)
+    controller.listen()
 
     try:
         while True:
