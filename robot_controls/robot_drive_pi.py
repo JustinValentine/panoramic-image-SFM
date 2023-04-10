@@ -27,19 +27,19 @@ class MyPS4Controller(Controller):
         self.update_wheel_velocities()
 
     def on_L3_right(self, value):
-        print('on_L3_right', value)
-        self.left_velocity -= value / 32767 * 500
-        self.right_velocity += value / 32767 * 500
+        print('on_L3_right', (value / 32767) * 500)
+        self.left_velocity -= (value / 32767) * 500
+        self.right_velocity += (value / 32767) * 500
         self.update_wheel_velocities()
 
     def on_R2_press(self, value):
-        print('on_R2_press', value)
+        # print('on_R2_press', (value / 32767) * 500)
         self.left_velocity = abs((value / 32767) * 500)
         self.right_velocity = abs((value / 32767) * 500)
         self.update_wheel_velocities()
 
     def on_L2_press(self, value):
-        print('on_L2_press', (value / 32767) * 500)
+        # print('on_L2_press', (value / 32767) * 500)
         self.left_velocity = -1*abs((value / 32767) * 500)
         self.right_velocity = -1*abs((value / 32767) * 500)
         self.update_wheel_velocities()
