@@ -104,9 +104,9 @@ def Drive():
     controller.listen()
 
     while True:
+        print('robot', LEFT_VELOCITY, RIGHT_VELOCITY)
         cmd = struct.pack(">Bhh", 145, LEFT_VELOCITY, RIGHT_VELOCITY) # Drirect Drive 5 bytes little endian 
         sendCommandRaw(cmd)
-
 
         baud_rate = 115200
         sleep_duration = 1 / baud_rate
