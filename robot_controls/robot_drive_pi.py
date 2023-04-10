@@ -8,7 +8,6 @@ class MyPS4Controller(Controller):
         super(MyPS4Controller, self).__init__(interface=interface, connecting_using_ds4drv=connecting_using_ds4drv)
         self.left_velocity = 0
         self.right_velocity = 0
-        self.prev_l3_value = 0
         self.velocity_callback = velocity_callback
         self.connection = None
 
@@ -59,17 +58,13 @@ class MyPS4Controller(Controller):
         pass
 
     def on_L3_left(self, value):
-        difference = self.prev_l3_value - value
-        self.prev_l3_value = value
-        self.left_velocity += (difference / 32767) * 500
-        self.right_velocity -= (difference / 32767) * 500
+        self.left_velocity += (value / 32767) * 500
+        self.right_velocity -= (value / 32767) * 500
         self.update_wheel_velocities()
 
     def on_L3_right(self, value):
-        difference = self.prev_l3_value + value
-        self.prev_l3_value = value
-        self.left_velocity -= (difference / 32767) * 500
-        self.right_velocity += (difference / 32767) * 500
+        self.left_velocity -= (value / 32767) * 500
+        self.right_velocity += (value / 32767) * 500
         self.update_wheel_velocities()
 
     def on_R2_press(self, value):
