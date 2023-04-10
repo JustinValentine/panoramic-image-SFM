@@ -61,6 +61,7 @@ class MyPS4Controller(Controller):
 
     def send_wheel_commands(self):
         vl, vr = calculate_wheel_velocities(self.left_joystick_y, self.r2_trigger, self.l2_trigger)
+        print(vl, vr)
 
         cmd = struct.pack(">Bhh", 145, vl, vr)  # Direct Drive 5 bytes little endian
         sendCommandRaw(cmd)
@@ -68,6 +69,7 @@ class MyPS4Controller(Controller):
         baud_rate = 115200
         sleep_duration = 1 / baud_rate
         time.sleep(sleep_duration)
+
 
 def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=200):
 
@@ -89,10 +91,11 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
 
     return int(vl), int(vr)
 
+
 def Drive():
 
     controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
-    controller.listen()
+    controller.listen(timeout=0.01)
 
     try:
         while True:
@@ -100,7 +103,6 @@ def Drive():
 
     except KeyboardInterrupt:
         controller.stop()
-
 
 def main():
     onStart()
