@@ -95,7 +95,7 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
 def Drive():
 
     controller = MyPS4Controller(interface="/dev/input/js0", connecting_using_ds4drv=False)
-    controller.listen(timeout=0.01)
+    controller.listen(timeout=1)
 
     try:
         while True:
