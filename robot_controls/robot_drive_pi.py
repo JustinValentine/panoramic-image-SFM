@@ -55,7 +55,7 @@ class MyPS4Controller(Controller):
         # Send the "Query List" command (149) with the encoder count packet IDs
         # Packet ID 43 for left wheel encoder count
         # Packet ID 44 for right wheel encoder count
-        cmd = struct.pack(">BBBBB", 149, 2, 43, 44)
+        cmd = struct.pack(">BBBB", 149, 2, 43, 44)
         self.send_command_raw(self.connection, cmd)
 
         # Read the response (2 bytes for each encoder count, plus 1 byte for the packet ID)
