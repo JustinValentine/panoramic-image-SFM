@@ -51,6 +51,19 @@ class MyPS4Controller(Controller):
             print("Lost connection")
             self.connection = None
 
+    def get_encoder_counts(self):
+        # Send the "Query List" command (149) with the encoder count packet IDs
+        # Packet ID 43 for left wheel encoder count
+        # Packet ID 44 for right wheel encoder count
+        cmd = struct.pack(">BBBBB", 149, 2, 43, 44)
+        self.send_command_raw(self.connection, cmd)
+
+        # Read the response (2 bytes for each encoder count, plus 1 byte for the packet ID)
+        response = self.connection.read(5)
+        left_encoder_count = struct.unpack(">h", response[1:3])[0]
+        right_encoder_count = struct.unpack(">h", response[3:5])[0]
+
+        print(left_encoder_count, right_encoder_count)
 
     def calculate_wheel_velocities(self):
 
@@ -69,6 +82,7 @@ class MyPS4Controller(Controller):
 
     def update_wheel_velocities(self):
         self.calculate_wheel_velocities()
+        self.get_encoder_counts()
 
         self.velocity_callback(self.left_velocity, self.right_velocity)
         
