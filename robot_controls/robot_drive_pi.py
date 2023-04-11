@@ -6,8 +6,16 @@ from pyPS4Controller.controller import Controller
 class MyPS4Controller(Controller):
     def __init__(self, interface, connecting_using_ds4drv, velocity_callback):
         super(MyPS4Controller, self).__init__(interface=interface, connecting_using_ds4drv=connecting_using_ds4drv)
+
+        self.max_velocity = 300
+
         self.left_velocity = 0
         self.right_velocity = 0
+
+        self.r2_trigger = 0
+        self.l2_trigger = 0
+        self.left_joystick_y = 0
+        
         self.velocity_callback = velocity_callback
         self.connection = None
 
@@ -43,9 +51,25 @@ class MyPS4Controller(Controller):
             print("Lost connection")
             self.connection = None
 
+
+    def calculate_wheel_velocities(self):
+
+        linear_vel = self.max_velocity * self.r2_trigger + self.l2_trigger * self.max_velocity
+
+        if self.left_joystick_y < 0:
+            self.left_velocity = int(linear_vel - (self.left_joystick_y * self.max_velocity))
+            self.right_velocity = int(linear_vel)
+
+        else:
+            self.left_velocity = int(linear_vel)
+            self.right_velocity = int(linear_vel + (self.left_joystick_y * self.max_velocity))
+
+        print(self.left_velocity , self.right_velocity, self.left_joystick_y)
+
+
     def update_wheel_velocities(self):
-        self.left_velocity = max(min(int(self.left_velocity), 500), -500)
-        self.right_velocity = max(min(int(self.right_velocity), 500), -500)
+        self.calculate_wheel_velocities()
+
         self.velocity_callback(self.left_velocity, self.right_velocity)
         
         cmd = struct.pack(">Bhh", 145, self.left_velocity, self.right_velocity)
@@ -58,33 +82,27 @@ class MyPS4Controller(Controller):
         pass
 
     def on_L3_left(self, value):
-        self.left_velocity += (value / 32767) * 300
-        self.right_velocity -= (value / 32767) * 300
+        self.left_joystick_y = value / 32767
         self.update_wheel_velocities()
 
     def on_L3_right(self, value):
-        self.left_velocity -= (value / 32767) * 300
-        self.right_velocity += (value / 32767) * 300
+        self.left_joystick_y = -1 * value / 32767
         self.update_wheel_velocities()
 
     def on_R2_press(self, value):
-        self.left_velocity = abs((value / 32767) * 300)
-        self.right_velocity = abs((value / 32767) * 300)
+        self.r2_trigger = value / 32767
         self.update_wheel_velocities()
 
     def on_L2_press(self, value):
-        self.left_velocity = -1 * abs((value / 32767) * 300)
-        self.right_velocity = -1 * abs((value / 32767) * 300)
+        self.l2_trigger = -1 * value / 32767
         self.update_wheel_velocities()
 
     def on_R2_release(self):
-        self.left_velocity = 0
-        self.right_velocity = 0
+        self.r2_trigger = 0
         self.update_wheel_velocities()
 
     def on_L2_release(self):
-        self.left_velocity = 0
-        self.right_velocity = 0
+        self.l2_trigger= 0
         self.update_wheel_velocities()
 
     def drive(self):
