@@ -22,7 +22,6 @@ def stitch_images(images):
         return None
 
 
-
 def main():
     image_paths = ['4.png', '5.png']
     images = load_images(image_paths)
