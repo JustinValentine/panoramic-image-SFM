@@ -94,7 +94,11 @@ class MyPS4Controller(Controller):
         self.send_command_raw(cmd)
 
     def on_circle_press(self):
-        cmd = struct.pack(">Bhh", 145, 50, -50)
+        cmd = struct.pack(">Bhh", 145, -30, 30)
+        self.send_command_raw(cmd)
+
+    def on_circle_release(self):
+        cmd = struct.pack(">Bhh", 145, 0, 0)
         self.send_command_raw(cmd)
 
     def on_L3_up(self, value):
