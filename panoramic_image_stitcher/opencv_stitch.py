@@ -1,15 +1,13 @@
 import cv2
+import os
 import numpy as np
-
 
 def load_images(image_paths):
     images = []
     for path in image_paths:
         img = cv2.imread(path)
-        img = cv2.resize(img, (1272, 713))  # You may need to adjust the dimensions depending on your images
         images.append(img)
     return images
-
 
 def stitch_images(images):
     stitcher = cv2.Stitcher_create(cv2.Stitcher_PANORAMA) if int(cv2.__version__.split('.')[0]) >= 4 else cv2.Stitcher_create()
@@ -21,9 +19,10 @@ def stitch_images(images):
         print("Error during stitching. Status code:", status)
         return None
 
-
 def main():
-    image_paths = ['4.png', '5.png']
+    image_directory = 'undistorted'
+    image_paths = [os.path.join(image_directory, f) for f in os.listdir(image_directory) if f.endswith('.png')]
+
     images = load_images(image_paths)
     stitched = stitch_images(images)
 

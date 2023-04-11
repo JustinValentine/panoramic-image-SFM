@@ -53,4 +53,4 @@ def capture_and_save_photos_from_all_available_cameras(num_photos=5, interval=0.
         cap.release()
 
 if __name__ == "__main__":
-    capture_and_save_photos_from_all_available_cameras()
+    capture_and_save_photos_from_all_available_cameras(num_photos=1)
