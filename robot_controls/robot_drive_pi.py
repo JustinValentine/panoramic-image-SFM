@@ -86,7 +86,7 @@ class MyPS4Controller(Controller):
         self.update_wheel_velocities()
 
     def on_L3_right(self, value):
-        self.left_joystick_y = -1 * value / 32767
+        self.left_joystick_y = value / 32767
         self.update_wheel_velocities()
 
     def on_R2_press(self, value):
