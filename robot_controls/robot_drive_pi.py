@@ -7,7 +7,7 @@ class MyPS4Controller(Controller):
     def __init__(self, interface, connecting_using_ds4drv, velocity_callback):
         super(MyPS4Controller, self).__init__(interface=interface, connecting_using_ds4drv=connecting_using_ds4drv)
 
-        self.max_velocity = 50
+        self.max_velocity = 75
 
         self.left_velocity = 0
         self.right_velocity = 0
@@ -86,7 +86,7 @@ class MyPS4Controller(Controller):
 
     def update_wheel_velocities(self):
         self.calculate_wheel_velocities()
-        self.get_encoder_counts()
+        # self.get_encoder_counts()
 
         self.velocity_callback(self.left_velocity, self.right_velocity)
         
