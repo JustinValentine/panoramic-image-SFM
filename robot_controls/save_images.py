@@ -4,6 +4,7 @@ import time
 import os
 import glob
 
+
 def check_camera_index(index):
     cap = cv2.VideoCapture(index)
     if not cap.isOpened():
@@ -11,6 +12,7 @@ def check_camera_index(index):
         return False
     cap.release()
     return True
+
 
 def get_available_cameras():
     index = 0
@@ -23,10 +25,12 @@ def get_available_cameras():
         index += 1
     return available_cameras
 
+
 def empty_images_folder(folder_path):
     files = glob.glob(f"{folder_path}/*.jpg")
     for file in files:
         os.remove(file)
+
 
 def capture_and_save_photos_from_all_available_cameras(num_photos=5, interval=0.2, folder_path="images"):
     empty_images_folder(folder_path)
