@@ -2,7 +2,7 @@ import serial
 import struct
 import time
 from pyPS4Controller.controller import Controller
-from save_images import capture_and_save_photos_from_all_available_cameras
+# from save_images import capture_and_save_photos_from_all_available_cameras
 
 class MyPS4Controller(Controller):
     def __init__(self, interface, connecting_using_ds4drv, velocity_callback):
@@ -83,7 +83,7 @@ class MyPS4Controller(Controller):
 
             # Capture and save photos from all available cameras
             print("Capturing and saving photos from all available cameras")
-            capture_and_save_photos_from_all_available_cameras()
+            # capture_and_save_photos_from_all_available_cameras()
 
 
     def on_x_release(self):
