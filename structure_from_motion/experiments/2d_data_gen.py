@@ -128,6 +128,6 @@ plt.show()
 
 W = np.array(W)
 
-W = W[:, :, 0]
+W = W[:, :, 0] # take just x axis (projection is 1-dimensional)
 
 np.save('W_test', W)
