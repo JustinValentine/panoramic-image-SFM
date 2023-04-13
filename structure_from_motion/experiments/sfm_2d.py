@@ -4,14 +4,25 @@ from numpy.linalg import pinv
 
 EPSILON = 1e-8
 
+def plot3d(x, title:str):
+    # TODO make sure to covert homogenous coords back to cartesian in 3D
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    ax.scatter(*x)
+    ax.set_aspect('equal')
+    ax.set_title(title)
+    plt.show()
+
 def hom_to_cart(p):
     try:
-        assert np.size(p)==3
+        assert np.size(p)==3 or np.size(p)==4
     except:
         raise ValueError
-    x = p[0] / p[2]
-    y = p[1] / p[2]
-    return np.array([x,y])
+    n = np.size(p)
+    cart = []
+    for i in range(n-1):
+        cart.append(p[i] / p[-1])
+    return np.array(cart)
 
 # Function to solve least squares
 def solve_least_square_pseudo(M, frames):
@@ -34,7 +45,7 @@ def structure_from_motion(W, perspective:bool=False):
     W_centered = (W - T_data.reshape(-1, 1))
 
     if perspective:
-    # for each view: mi diag(λi) = Pi M
+        # for each view: mi diag(λi) = Pi M
 
         lambdas = np.ones((m_views, n_points))  # initial values
 
@@ -47,36 +58,36 @@ def structure_from_motion(W, perspective:bool=False):
             for j in range(lambdas.shape[1]):
                 lambdas[:,j] /= np.linalg.norm(lambdas[:,j])
 
-            # form 2m x n measurement matrix, current W is already (xi yi 1, xi yi 1, ...) -- just need to insert 1's to make homogeneous
-            # W is rank 3
-            W_ = np.zeros((2*m_views, n_points))
+            # form 3m x n measurement matrix, current W is ALREADY (xi yi 1, xi yi 1, ...) - need to modify to homoeneous and set y=0
+            # W is rank 4
+            W_ = np.zeros((3*m_views, n_points))
             for i in range(m_views):
-                W_[i:i+2, :] = lambdas[i, :] * np.array([W[i, :], np.ones(n_points)])
+                W_[i:i+3, :] = lambdas[i, :] * np.array([W[i, :], np.zeros(n_points), np.ones(n_points)])
             
-            # Factor W with SVD (rank 3 approximation)
+            # Factor W with SVD (rank 4 approximation)
             U,D,Vt = np.linalg.svd(W_, full_matrices=True)
-            P = U[:,:3] @ np.diag(D[:3])
-            M = Vt[:3]
+            P = U[:,:4] @ np.diag(D[:4])
+            M = Vt[:4]
 
-            # stopping criterion: sigma_4 is small
-            if D[3] < EPSILON:
+            # stopping criterion: sigma_5 is small
+            if D[4] < EPSILON:
                 break
 
             # Estimate lambda from each view reprojected
-            # mi (2 x n_points) @ lamdai (diag n_points) = Pi (2 x 3) @ M (3 x n_points)
+            # mi (3 x n_points) @ lamdai (diag n_points) = Pi (3 x 4) @ M (4 x n_points)
             # source: https://math.stackexchange.com/questions/1733330/least-squares-solution-for-a-matrix-system-with-diagonal-matrix-constraint
             for i in range(m_views):
-                A = W_[i:i+2,:]
-                B = P[i:i+2,:] @ M
+                A = W_[i:i+3,:]
+                B = P[i:i+3,:] @ M
                 lambdas[i, :] = np.linalg.inv(np.eye(n_points)*(A.T @ A)) @ np.diag(A.T @ B)
-                # lambdas[i, :] = np.linalg.solve(np.eye(n_points), np.linalg.pinv(W_[i:i+2,:]) @ P[i:i+2,:] @ M)
+                # lambdas[i, :] = np.linalg.solve(np.eye(n_points), np.linalg.pinv(W_[i:i+3,:]) @ P[i:i+3,:] @ M)
 
         print(f"stopping lambda estimation after {iter+1} iterations")
         
         # convert back to cartesian coords
         M = M.T
         for i in range(M.shape[0]):
-            X = np.empty((M.shape[0], 2))
+            X = np.empty((M.shape[0], 3))
             X[i] = hom_to_cart(M[i])
         X = X.T
         
@@ -118,9 +129,10 @@ def structure_from_motion(W, perspective:bool=False):
         # X = Q.T @ X
 
     # Plot the points
-    plt.scatter(*X)
-    plt.title('Reconstructed')
-    plt.show()
+    plot3d(X, 'Reconstructed points')   # should be more of a 2D plane-?
+    # plt.scatter(*X)
+    # plt.title('Reconstructed')
+    # plt.show()
     pass
 
 if __name__=='__main__':
