@@ -1,1 +1,1 @@
-<img src="images/test_spin.gif" alt="Robot Gif" width="300" height="300">
+<img src="images/test_spin.gif" alt="Robot Gif" width="500" height="500">
