@@ -39,7 +39,6 @@ def structure_from_motion(W):
     
     # X = shear_matrix @ X
 
-
     # # # Solve for C using least squares
     # C = solve_least_square_pseudo(M, frames)
 

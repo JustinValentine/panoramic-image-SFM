@@ -25,7 +25,6 @@ def calculate_intersection_circle(vertex, optical_center, radius):
     return (intersection_x, intersection_y)
 
 
-
 # Define the square's vertices
 square_vertices = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
 
