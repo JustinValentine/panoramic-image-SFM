@@ -3,10 +3,44 @@ import numpy as np
 import hid
 import time
 
+import cv2
+import os
+import glob
 
 # These are the vendor and product IDs for a PS4 controller.
 VENDOR_ID = 0x054C
 PRODUCT_ID = 0x05C4
+
+
+baud_rate = 115200
+sleep_duration = 1 / baud_rate
+
+
+def check_camera_index(index):
+    cap = cv2.VideoCapture(index)
+    if not cap.isOpened():
+        cap.release()
+        return False
+    cap.release()
+    return True
+
+
+def get_available_cameras():
+    index = 0
+    available_cameras = []
+    while True:
+        if check_camera_index(index):
+            available_cameras.append(index)
+        else:
+            break
+        index += 1
+    return available_cameras
+
+
+def empty_images_folder(folder_path):
+    files = glob.glob(f"{folder_path}/*.jpg")
+    for file in files:
+        os.remove(file)
 
 
 def onStart():
@@ -80,7 +114,7 @@ def calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger, v_max=20
     return int(vl), int(vr)
 
 
-def Drive():
+def Drive(available_cameras):
 
     device = connect_ps4_controller()
     if device is None:
@@ -92,31 +126,68 @@ def Drive():
 
             if len(data) > 0:
                 left_joystick_y = data[1]
+                print(data)
                 r2_trigger = data[-1]
                 l2_trigger = data[-2]
+                x_trigger = data[5]
 
                 vl, vr = calculate_wheel_velocities(left_joystick_y, r2_trigger, l2_trigger)
 
             else:
                 vl, vr = 0, 0
 
-            cmd = struct.pack(">Bhh", 145, vl, vr) # Drirect Drive 5 bytes little endian 
-            sendCommandRaw(cmd)
+            if x_trigger == 40:
 
+                for i in range(3):
+                    start_time = time.time()
+                    while time.time() - start_time < 0.05:
+                        cmd = struct.pack(">Bhh", 145, 25, -25) # Drirect Drive 5 bytes little endian 
+                        sendCommandRaw(cmd)
+                        time.sleep(sleep_duration)
 
-            baud_rate = 115200
-            sleep_duration = 1 / baud_rate
+                    cmd = struct.pack(">Bhh", 145, 0, 0) # Drirect Drive 5 bytes little endian 
+                    sendCommandRaw(cmd)
+
+                    print("Capturing and saving photos from all available cameras")
+                    capture_image(available_cameras, photo=i)
+                    time.sleep(0.1)
+                break
             
-            time.sleep(sleep_duration)
+            else:
+                cmd = struct.pack(">Bhh", 145, vl, vr) # Drirect Drive 5 bytes little endian 
+                sendCommandRaw(cmd)
+                
+                time.sleep(sleep_duration)
 
     except KeyboardInterrupt:
         device.close()
 
 
+def capture_image(available_cameras, folder_path="images", photo=0):
+    caps = [cv2.VideoCapture(index) for index in available_cameras]
+
+    for camera_index, cap in enumerate(caps):
+        ret, frame = cap.read()
+        if ret:
+            file_name = f'{folder_path}/webcam_{camera_index}_photo_{photo}.png'
+            cv2.imwrite(file_name, frame)
+            print(f"Saved image {photo} from camera {camera_index} as {file_name}")
+
+
 def main():
     onStart()
+
+    empty_images_folder(folder_path="images")
+
+    available_cameras = get_available_cameras()
+
+    if not available_cameras:
+        print("No cameras found.")
+        return
+
     time.sleep(1)
-    Drive()
+
+    Drive(available_cameras)
 
 
 if __name__ == "__main__":

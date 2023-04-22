@@ -32,7 +32,7 @@ def empty_images_folder(folder_path):
         os.remove(file)
 
 
-def capture_and_save_photos_from_all_available_cameras(num_photos=5, interval=0.2, folder_path="images"):
+def capture_and_save_photos_from_all_available_cameras(num_photos=1, interval=0.2, folder_path="images", photo=0):
     empty_images_folder(folder_path)
 
     available_cameras = get_available_cameras()
@@ -46,7 +46,7 @@ def capture_and_save_photos_from_all_available_cameras(num_photos=5, interval=0.
         for camera_index, cap in enumerate(caps):
             ret, frame = cap.read()
             if ret:
-                file_name = f'{folder_path}/webcam_{camera_index}_photo_{i}.jpg'
+                file_name = f'{folder_path}/webcam_{camera_index}_photo_{photo}.png'
                 cv2.imwrite(file_name, frame)
                 print(f"Saved image {i} from camera {camera_index} as {file_name}")
         time.sleep(interval)

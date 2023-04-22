@@ -69,7 +69,7 @@ folder_index = 0
 for subdir, dirs, files in os.walk(input_directory):
     file_index = 0
     for file in files:
-        if file.endswith('.jpg'):
+        if file.endswith('.png'):
             image_path = os.path.join(subdir, file)
             undistorted_image = undistort(image_path, balance=0.9, dim2=(2304, 1296), dim3=(1400, 1116))
 

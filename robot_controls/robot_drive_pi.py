@@ -77,13 +77,13 @@ class MyPS4Controller(Controller):
 
 
     def on_x_press(self):
-            # Turn with wheel speeds of -25 and 25
-            cmd = struct.pack(">Bhh", 145, -25, 25)
-            self.send_command_raw(cmd)
+        # Turn with wheel speeds of -25 and 25
+        cmd = struct.pack(">Bhh", 145, -25, 25)
+        self.send_command_raw(cmd)
 
-            # Capture and save photos from all available cameras
-            print("Capturing and saving photos from all available cameras")
-            # capture_and_save_photos_from_all_available_cameras()
+        # Capture and save photos from all available cameras
+        print("Capturing and saving photos from all available cameras")
+        # capture_and_save_photos_from_all_available_cameras()
 
 
     def on_x_release(self):
