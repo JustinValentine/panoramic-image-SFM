@@ -140,7 +140,7 @@ def Drive(available_cameras):
 
                 for i in range(3):
                     start_time = time.time()
-                    while time.time() - start_time < 0.05:
+                    while time.time() - start_time < 0.1:
                         cmd = struct.pack(">Bhh", 145, 25, -25) # Drirect Drive 5 bytes little endian 
                         sendCommandRaw(cmd)
                         time.sleep(sleep_duration)

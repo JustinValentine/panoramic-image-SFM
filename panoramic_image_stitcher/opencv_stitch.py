@@ -1,6 +1,8 @@
 import cv2
 import os
 import numpy as np
+from cylindrical_image_projection import CylindricalProjector
+
 
 def load_images(image_paths):
     images = []
@@ -10,8 +12,13 @@ def load_images(image_paths):
     return images
 
 def stitch_images(images):
+    projector = CylindricalProjector()
+
+    cylindrical_images = [projector.project_onto_cylinder(img) for img in images]
+
     stitcher = cv2.Stitcher_create(cv2.Stitcher_PANORAMA) if int(cv2.__version__.split('.')[0]) >= 4 else cv2.Stitcher_create()
-    (status, stitched) = stitcher.stitch(images)
+
+    (status, stitched) = stitcher.stitch(cylindrical_images)
 
     if status == 0:
         return stitched
