@@ -11,4 +11,4 @@ The script connects to the robot via a serial connection, reads input from a PS4
 1. Connect the robot and cameras to your computer.
 2. Connect the PS4 controller to your computer.
 3. Run the robot control script
-`python robot_control.py`
+`robot_drive_mac.py`
