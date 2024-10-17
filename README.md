@@ -6,9 +6,8 @@
 </div>
 
 ## Results
-![Result 1](path_to_kinematic_image)
-![Result 2](path_to_kinematic_image)
-
+![Result 1](images/img1.png)
+![Result 2](images/img2.png)
 
 ## Overview
 In this project, we developed a pipeline that involves:
