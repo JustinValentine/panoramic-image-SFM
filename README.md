@@ -5,6 +5,11 @@
   <p><i> An example of the robot used for capturing images in the project. </i></p>
 </div>
 
+## Results
+![Result 1](path_to_kinematic_image)
+![Result 2](path_to_kinematic_image)
+
+
 ## Overview
 In this project, we developed a pipeline that involves:
 
